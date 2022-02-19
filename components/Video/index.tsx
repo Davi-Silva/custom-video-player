@@ -114,6 +114,20 @@ const Video = () => {
     video.currentTime = progressTime;
   };
 
+  const handleDoubleClickLeft = () => {
+    const video: HTMLVideoElement = ref.current.querySelector("video");
+    video.currentTime -= 10;
+  };
+
+  const handleDoubleClickRight = () => {
+    const video: HTMLVideoElement = ref.current.querySelector("video");
+    video.currentTime += 10;
+  };
+
+  const handleDoubleClickCenter = () => {
+    setIsFullscreen(!isFullscreen);
+  };
+
   return (
     <Container
       ref={ref}
@@ -122,9 +136,12 @@ const Video = () => {
     >
       <ControlsOverlay>
         <TopControls></TopControls>
-        <LeftControls></LeftControls>
-        <CenterControls onClick={handlePlayVideo} />
-        <RightControls></RightControls>
+        <LeftControls onDoubleClick={handleDoubleClickLeft}></LeftControls>
+        <CenterControls
+          onClick={handlePlayVideo}
+          onDoubleClick={handleDoubleClickCenter}
+        />
+        <RightControls onDoubleClick={handleDoubleClickRight}></RightControls>
         <BottomControls>
           <ControlsContainer>
             <BottomLeftControlsGroup>
