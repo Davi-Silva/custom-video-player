@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { IVideo } from "@interfaces/components/Video";
+import { fade } from "@styles/animations";
 
 export const Container = styled.div<IVideo>`
   width: 100%;
@@ -25,6 +26,18 @@ export const ControlsOverlay = styled.div`
 
 export const CenterControls = styled.div`
   grid-area: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  .active {
+    animation: ${fade} 0.5s linear forwards;
+  }
+  .playIcon {
+    opacity: 0;
+    svg {
+      font-size: 2rem;
+    }
+  }
 `;
 
 export const TopControls = styled.div`
@@ -33,10 +46,34 @@ export const TopControls = styled.div`
 
 export const LeftControls = styled.div`
   grid-area: left;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  .active {
+    animation: ${fade} 0.5s linear forwards;
+  }
+  .backwardsIcon {
+    opacity: 0;
+    svg {
+      font-size: 2rem;
+    }
+  }
 `;
 
 export const RightControls = styled.div`
   grid-area: right;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  .active {
+    animation: ${fade} 0.5s linear forwards;
+  }
+  .forwardsIcon {
+    opacity: 0;
+    svg {
+      font-size: 2rem;
+    }
+  }
 `;
 
 export const BottomControls = styled.div`
@@ -54,6 +91,12 @@ export const ControlsContainer = styled.div`
   flex-direction: row;
   gap: 1.2rem;
   align-items: center;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  transition: background 0.3s ease-in-out;
+  &:hover {
+    background: rgba(0, 0, 0, 0.5);
+  }
 `;
 
 export const BottomLeftControlsGroup = styled.div`
@@ -77,6 +120,32 @@ export const VolumeButton = styled.div`
   cursor: pointer;
   svg {
     font-size: 1.6rem;
+  }
+`;
+
+export const VolumeAndSliderContainer = styled.div`
+  position: relative;
+`;
+
+export const VolumeSliderContainer = styled.div`
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  position: absolute;
+  transform: translateY(-11.5rem);
+`;
+
+export const VolumeSlider = styled.div`
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 0.5rem;
+  width: fit-content;
+  height: 8rem;
+  transform: rotate(180deg);
+  cursor: pointer;
+  div {
+    border-radius: 4rem;
+    background: rgba(255, 255, 255, 1);
+    width: 0.25rem;
   }
 `;
 

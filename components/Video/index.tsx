@@ -8,6 +8,8 @@ import {
   FaCompress,
   FaCog,
   FaExternalLinkAlt,
+  FaForward,
+  FaBackward,
 } from "react-icons/fa";
 
 import {
@@ -30,6 +32,9 @@ import {
   ProgressBar,
   CurrentProgressBar,
   TimeContainer,
+  VolumeSlider,
+  VolumeSliderContainer,
+  VolumeAndSliderContainer,
 } from "@styles/components/Video";
 
 const Video = () => {
@@ -37,6 +42,15 @@ const Video = () => {
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+  const [isVolumeSliderVisible, setIsVolumeSliderVisible] =
+    useState<boolean>(false);
+  const [isLoaded, setIsLoaded] = useState<boolean>(false);
+  const [isForwarded, setIsForwarded] = useState<boolean>(false);
+  const [isBackwards, setIsBackwards] = useState<boolean>(false);
+
+  useEffect(() => {
+    setIsLoaded(true);
+  }, []);
 
   useEffect(() => {
     const video: HTMLVideoElement = ref.current.querySelector("video");
@@ -44,12 +58,20 @@ const Video = () => {
   }, [isMuted]);
 
   useEffect(() => {
+    const playIcon = ref.current.querySelector(".playIcon");
     const video: HTMLVideoElement = ref.current.querySelector("video");
+
     if (video.paused) {
       video.play();
     } else {
       video.pause();
     }
+
+    playIcon.classList.add("active");
+
+    setTimeout(() => {
+      playIcon.classList.remove("active");
+    }, 500);
   }, [isPaused]);
 
   const handlePlayVideo = useCallback(() => {
@@ -59,6 +81,10 @@ const Video = () => {
   const toggleMuteVideo = useCallback(() => {
     setIsMuted(!isMuted);
   }, [isMuted]);
+
+  const toggleVolumeSlider = useCallback(() => {
+    setIsVolumeSliderVisible(!isVolumeSliderVisible);
+  }, [isVolumeSliderVisible]);
 
   const toggleFullscreen = useCallback(() => {
     setIsFullscreen(!isFullscreen);
@@ -114,14 +140,55 @@ const Video = () => {
     video.currentTime = progressTime;
   };
 
-  const handleDoubleClickLeft = () => {
+  const handleChangeVolume = (e) => {
     const video: HTMLVideoElement = ref.current.querySelector("video");
+    const volumeSliderContainer = ref.current.querySelector("#volumeSlider");
+    const volumeSlider = volumeSliderContainer.querySelector("div");
+
+    const volume = e.nativeEvent.offsetY / volumeSliderContainer.offsetHeight;
+
+    console.log("volume:", volume);
+    console.log(`${volume * 100}%`);
+
+    if (volume > 1) {
+      video.volume = 1;
+    } else {
+      video.volume = volume;
+    }
+
+    volumeSlider.style.height = `${volume * 100}%`;
+  };
+
+  const handleDoubleClickLeft = () => {
+    const backwardsIcon = ref.current.querySelector(".backwardsIcon");
+    const video: HTMLVideoElement = ref.current.querySelector("video");
+
+    setIsBackwards(true);
+
     video.currentTime -= 10;
+
+    backwardsIcon.classList.add("active");
+
+    setTimeout(() => {
+      backwardsIcon.classList.remove("active");
+      setIsBackwards(false);
+    }, 500);
   };
 
   const handleDoubleClickRight = () => {
+    const forwardIcon = ref.current.querySelector(".forwardIcon");
     const video: HTMLVideoElement = ref.current.querySelector("video");
+
+    setIsForwarded(true);
+
     video.currentTime += 10;
+
+    forwardIcon.classList.add("active");
+
+    setTimeout(() => {
+      forwardIcon.classList.remove("active");
+      setIsForwarded(false);
+    }, 500);
   };
 
   const handleDoubleClickCenter = () => {
@@ -136,21 +203,45 @@ const Video = () => {
     >
       <ControlsOverlay>
         <TopControls></TopControls>
-        <LeftControls onDoubleClick={handleDoubleClickLeft}></LeftControls>
+        <LeftControls onDoubleClick={handleDoubleClickLeft}>
+          <div className="backwardsIcon">
+            {isLoaded && isBackwards && <FaBackward />}
+          </div>
+        </LeftControls>
         <CenterControls
           onClick={handlePlayVideo}
           onDoubleClick={handleDoubleClickCenter}
-        />
-        <RightControls onDoubleClick={handleDoubleClickRight}></RightControls>
+        >
+          <div className="playIcon">
+            {isLoaded && isPaused ? <FaPause /> : <FaPlay />}
+          </div>
+        </CenterControls>
+        <RightControls onDoubleClick={handleDoubleClickRight}>
+          <div className="forwardIcon">
+            {isLoaded && isForwarded && <FaForward />}
+          </div>
+        </RightControls>
         <BottomControls>
           <ControlsContainer>
             <BottomLeftControlsGroup>
               <PlayButton onClick={handlePlayVideo}>
-                {isPaused ? <FaPause /> : <FaPlay />}
+                {isLoaded && isPaused ? <FaPause /> : <FaPlay />}
               </PlayButton>
-              <VolumeButton onClick={toggleMuteVideo}>
-                {isMuted ? <FaVolumeMute /> : <FaVolumeUp />}
-              </VolumeButton>
+              <VolumeAndSliderContainer>
+                {isVolumeSliderVisible && (
+                  <VolumeSliderContainer onClick={(e) => handleChangeVolume(e)}>
+                    <VolumeSlider id="volumeSlider">
+                      <div />
+                    </VolumeSlider>
+                  </VolumeSliderContainer>
+                )}
+                <VolumeButton
+                  onClick={toggleMuteVideo}
+                  onMouseEnter={toggleVolumeSlider}
+                >
+                  {isMuted ? <FaVolumeMute /> : <FaVolumeUp />}
+                </VolumeButton>
+              </VolumeAndSliderContainer>
             </BottomLeftControlsGroup>
             <ProgressBar
               onClick={(e) => handleClickProgress(e)}
